@@ -1,40 +1,37 @@
 
 import os
 import openai
-from openai import Model
+import tiktoken
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-question = "Summarize the transcript of this Dungeons and Dragons session tell me the story of the game, what happened, who did what, and what was the outcome. Please write several outcomes if there are more than one. There will be several prompts after this one with the transcript."
-transcription_file = "./transcript.txt"
-max_tokens = 100
-temperature = 0.7
-model_name = "text-davinci-002"
-model = Model(model_name)
-chunk_size = 100
-
+max_tokens_per_transcript = 2000
+max_lines_per_transcript = 100
+transcription_file = "./transcriptions/adventure-zone-ep1.txt"
 with open(transcription_file, 'r') as f:
     lines = f.readlines()
+prompt = f"Summarize the transcript of this Dungeons and Dragons session. This is only a part of the transcript. Summarize what is happening with each of the players."
 
-# Split the lines into chunks
-chunks = [lines[i:i+chunk_size] for i in range(0, len(lines), chunk_size)]
-chunks.insert(0, [question])
+model_name = "gpt-3.5-turbo"
+enc = tiktoken.encoding_for_model(model_name)
+encoded_prompt = enc.encode(prompt)
+# print(f"The amount of tokens for the transcritpion is {len(encoded_prompt)}")
+sliced_transcript = [lines[i:i+max_lines_per_transcript] for i in range(0, len(lines), max_lines_per_transcript)]
+sliced_prompt = [encoded_prompt[i:i+max_tokens_per_transcript] for i in range(0, len(encoded_prompt), max_tokens_per_transcript)]
 
-# Loop over each chunk and generate a summary using ChatGPT
 summaries = []
-for chunk in chunks:
-    print(f'Processing chunk of {len(chunk)} lines...')
-    prompt = ''.join(chunk)
-    response = openai.Completion.create(
-        engine=model,
-        prompt=prompt,
-        max_tokens=max_tokens,
-        temperature=temperature
-    )
-    print(f'Response: {response.choices[0].text.strip()}')
-    summary = response.choices[0].text.strip()
-    summaries.append(summary)
+for i, tslice in enumerate(sliced_transcript):
+    print(f"Request {i+1} of {len(tslice)}")
+    chat_completion = openai.ChatCompletion.create(
+        model=model_name, 
+        messages=[
+                {"role": "system", "content": 'You will be provided with a transcript delimited by triple quotes and a prompt to summarize. Your task is to summarize using the provided transcript and be as concise as possible.'},
+                {"role": "user", "content": f'"""{tslice}""" Prompt: {prompt} '},
+            ])
+    print(chat_completion.choices[0].message.content)
+    summaries.append(chat_completion.choices[0].message.content)
 
-# Write the summaries to a new file
-with open('summaries.txt', 'w') as f:
-    for summary in summaries:
-        f.write(summary + '\n')
+
+# # Write the summaries to a new file
+# with open('summaries.txt', 'w') as f:
+#     for summary in summaries:
+#         f.write(summary + '\n')
