@@ -5,7 +5,7 @@ import datetime
 
 import whisper
 
-transcription_model = whisper.load_model("tiny")
+transcription_model = whisper.load_model("large")
 
 def get_speaker(path):
     filename = os.path.basename(path)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     print(f'Sorting transcript segments by start position...')
     sorted_segments = sorted(transcript_segments, key=lambda k: k['start'])
 
-    counter = 0
+    counter = 0 # why is this here?
     for segment in sorted_segments:
         counter += 1
         print(f'[{segment["start"]:9.2f}] {segment["speaker"]:>16}: {segment["text"]}')

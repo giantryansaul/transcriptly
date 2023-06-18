@@ -1,4 +1,10 @@
 transcriptions
 uploads
 __pycache__
-.env
+.env*
+venv
+summaries
+cache
+*.pkl
+.DS_Store
+audio
