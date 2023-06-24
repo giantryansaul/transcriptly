@@ -8,3 +8,4 @@ cache
 *.pkl
 .DS_Store
 audio
+.vscode

@@ -35,7 +35,7 @@ After this, take some of the transcription files from my own D&D group and test 
 
 - [ ] Clean up older D&D transcripts programmatically.
 - [ ] Test with D&D transcripts.
-- [ ] Allow settings in the summarization script to change the desired outcome of the summary.
+- [x] Allow settings in the summarization script to change the desired outcome of the summary.
 - [ ] Run through summarization script.
 
 
@@ -72,3 +72,13 @@ Transcribed some transcripts with modified parameters.
 * Went through the summarize.py file and made it more modular, better logging, and made the summarization prompts into environment variables, loading them through a .env file. This file can be customized and you can save multiple versions of it to use for different summarization tasks.
 * Split transcribe into multi and single inputs. I can probably consolidate these into a single script, but for now I'm keeping them separate.
 * The commit from today includes several weeks of uncommitted work.
+
+## 06-24-2023
+
+* Updates to transcription script, moved the transcription model to an environment variable.
+* Changed from print in the transcription script to a logger. Should consider consolidating both transcription scripts into one with some arguments.
+* Added a function to remove duplicate lines, I should probably write a simple unit test for this function.
+
+[ ] Add unit test framework to the project.
+[ ] Add unit tests for the duplicate line removal function.
+[ ] Add unit tests for the summarization script.
