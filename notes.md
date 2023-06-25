@@ -82,3 +82,7 @@ Transcribed some transcripts with modified parameters.
 [ ] Add unit test framework to the project.
 [ ] Add unit tests for the duplicate line removal function.
 [ ] Add unit tests for the summarization script.
+
+## 06-25-2023
+
+* Setup some of the project structure for unit tests and general organization.
