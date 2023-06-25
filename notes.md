@@ -86,3 +86,9 @@ Transcribed some transcripts with modified parameters.
 ## 06-25-2023
 
 * Setup some of the project structure for unit tests and general organization.
+* I'm going through refactoring the multi-input script into a module service, this will take some time to abstract the whisper output into a more generic format.
+* Although I'm not sure if I'll ever use something that's not Whisper, I'd like to put simple abstractions in place so I can create some unit tests.
+* What is going to be helpful for unit testing is abstracting all of the parts that whisper returns that I use in my own transcriptions. This means abstracting the transcript, the segments, and the speakers. I can then use these abstractions to create unit tests for the summarization script.
+
+[ ] Finish refactoring the multi-input script into a module service.
+[ ] Finish refactoring all of the transcription service parts so that the transcript, segments, and speakers are all abstracted into a generic format.
