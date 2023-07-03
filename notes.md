@@ -1,4 +1,4 @@
-# Whisper Server
+# Transcriptly
 
 ## Transcription
 
@@ -91,4 +91,18 @@ Transcribed some transcripts with modified parameters.
 * What is going to be helpful for unit testing is abstracting all of the parts that whisper returns that I use in my own transcriptions. This means abstracting the transcript, the segments, and the speakers. I can then use these abstractions to create unit tests for the summarization script.
 
 [ ] Finish refactoring the multi-input script into a module service.
-[ ] Finish refactoring all of the transcription service parts so that the transcript, segments, and speakers are all abstracted into a generic format.
+[x] Finish refactoring all of the transcription service parts so that the transcript, segments, and speakers are all abstracted into a generic format.
+
+## 07-02-2023
+
+* Continued refactoring the multi-input script into a module service and abstracting the parts of the whisper output that I use in my own transcriptions.
+* Segements and transcription output are in their own data classes now, so I should be able to setup some unit tests.
+
+## 07-03-2023
+* Created multiple unit tests for the Transcript class.
+* WhisperService is mocked out.
+* There are some transcription tasks that I would like to break out into worker services and await them to finish. This should be the next major development.
+
+[ ] Follow TODOs in the Transcript service to break out multi-input methods.
+[ ] Read up more on worker services that Python offers.
+[ ] Create a worker service for the multi-input transcription.

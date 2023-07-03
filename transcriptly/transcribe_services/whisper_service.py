@@ -1,5 +1,6 @@
 import whisper
 
+from ..types import TranscriptionResult, Segment
 from .transcribe_service import TranscribeService
 
 class WhisperTranscribe(TranscribeService):
@@ -10,12 +11,19 @@ class WhisperTranscribe(TranscribeService):
         self.logprob_threshold = kwargs.get("logprob_threshold", None)
         self.condition_on_previous_text = kwargs.get("condition_on_previous_text", False)
 
-    def transcribe(self, file_path, verbose=False):
-        result = self.whisper_model.transcribe(
+    def transcribe(self, file_path, verbose=False) -> TranscriptionResult:
+        whisper_result = self.whisper_model.transcribe(
             file_path, 
             verbose=verbose,
             no_speech_threshold=self.no_speech_threshold, 
             logprob_threshold=self.logprob_threshold, 
             condition_on_previous_text=self.condition_on_previous_text
         )
+        result = TranscriptionResult()
+        segments = []
+        for segment in whisper_result["segments"]:
+            segments.append(Segment(segment["text"], segment["start_time"], segment["end_time"]))
+        result.segments = segments
+        result.text = whisper_result["text"]
+        result.audio_file_path = file_path
         return result
