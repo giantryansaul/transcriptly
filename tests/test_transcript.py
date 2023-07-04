@@ -34,7 +34,10 @@ class TestTranscript(TestCase):
         # the WhisperTranscribe class
         whisper_instance = mock.return_value
         whisper_instance.transcribe.return_value = TranscriptionResult(
-            text="Hello world"
+            segments=[
+                Segment("Hello", 0, 1),
+                Segment("world", 1, 2),
+            ]
         )
         transcribe = Transcribe(
             service_name="whisper",
@@ -42,13 +45,13 @@ class TestTranscript(TestCase):
         )
         transcription_result = transcribe.transcribe_single_audio_file("test.wav")
         whisper_instance.transcribe.assert_called_once_with("test.wav")
-        self.assertEqual(transcription_result.text, "Hello world")
+        self.assertEqual(transcription_result[0].text, "Hello")
+        self.assertEqual(transcription_result[1].text, "world")
 
     @patch("transcriptly.transcribe_services.whisper_service.WhisperTranscribe")
     def test_remove_duplicates_from_segments(self, mock):
         whisper_instance = mock.return_value
         whisper_instance.transcribe.return_value = TranscriptionResult(
-            text="Hello world world",
             segments=[
                 Segment("Hello", 0, 1),
                 Segment("world", 1, 2),
@@ -61,15 +64,14 @@ class TestTranscript(TestCase):
             remove_duplicates=True
         )
         transcription_result = transcribe.transcribe_single_audio_file("test.wav")
-        self.assertEqual(len(transcription_result.segments), 2)
-        self.assertEqual(transcription_result.segments[0].text, "Hello")
-        self.assertEqual(transcription_result.segments[1].text, "world")
+        self.assertEqual(len(transcription_result), 2)
+        self.assertEqual(transcription_result[0].text, "Hello")
+        self.assertEqual(transcription_result[1].text, "world")
 
     @patch("transcriptly.transcribe_services.whisper_service.WhisperTranscribe")
     def test_remove_duplicates_with_one_segment(self, mock):
         whisper_instance = mock.return_value
         whisper_instance.transcribe.return_value = TranscriptionResult(
-            text="Hello",
             segments=[
                 Segment("Hello", 0, 1)
             ]
@@ -80,14 +82,13 @@ class TestTranscript(TestCase):
             remove_duplicates=True
         )
         transcription_result = transcribe.transcribe_single_audio_file("test.wav")
-        self.assertEqual(len(transcription_result.segments), 1)
-        self.assertEqual(transcription_result.segments[0].text, "Hello")
+        self.assertEqual(len(transcription_result), 1)
+        self.assertEqual(transcription_result[0].text, "Hello")
     
     @patch("transcriptly.transcribe_services.whisper_service.WhisperTranscribe")
     def test_add_speaker_to_segments(self, mock):
         whisper_instance = mock.return_value
         whisper_instance.transcribe.return_value = TranscriptionResult(
-            text="Hello world",
             segments=[
                 Segment("Hello", 0, 1),
                 Segment("world", 1, 2),
@@ -98,9 +99,9 @@ class TestTranscript(TestCase):
             model_name="tiny",
         )
         transcription_result = transcribe.transcribe_single_audio_file("test.wav", speaker="John")
-        self.assertEqual(len(transcription_result.segments), 2)
-        self.assertEqual(transcription_result.segments[0].speaker, "John")
-        self.assertEqual(transcription_result.segments[1].speaker, "John")
+        self.assertEqual(len(transcription_result), 2)
+        self.assertEqual(transcription_result[0].speaker, "John")
+        self.assertEqual(transcription_result[1].speaker, "John")
     
     @patch("os.path.basename")
     def test_get_speaker_from_file_path(self, mock):

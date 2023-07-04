@@ -2,6 +2,11 @@ from dataclasses import dataclass
 from typing import List
 
 @dataclass
+class AudioInput:
+    file_path: str
+    speaker: str = None
+
+@dataclass
 class Segment:
     text: str
     start_time: float
