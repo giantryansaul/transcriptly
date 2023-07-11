@@ -1,6 +1,6 @@
 import whisper
 
-from ..types import TranscriptionResult, Segment
+from ..data_types import TranscriptionResult, Segment
 from .transcribe_service import TranscribeService
 
 class WhisperTranscribe(TranscribeService):
@@ -22,7 +22,7 @@ class WhisperTranscribe(TranscribeService):
         result = TranscriptionResult()
         segments = []
         for segment in whisper_result["segments"]:
-            segments.append(Segment(segment["text"], segment["start_time"], segment["end_time"]))
+            segments.append(Segment(segment["text"], segment["start"], segment["end"]))
         result.segments = segments
         result.text = whisper_result["text"]
         result.audio_file_path = file_path

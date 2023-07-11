@@ -1,4 +1,4 @@
-from ..types import TranscriptionResult
+from ..data_types import TranscriptionResult
 
 
 class TranscribeService:

@@ -1,7 +1,7 @@
-from unittest import TestCase
+from unittest import TestCase, main
 from unittest.mock import patch
 from transcriptly.transcribe import Transcribe
-from transcriptly.types import Segment, TranscriptionResult
+from transcriptly.data_types import Segment, TranscriptionResult
 
 class TestTranscript(TestCase):
     def test_init(self):
@@ -127,6 +127,19 @@ class TestTranscript(TestCase):
         self.assertEqual(speaker, "John")
         mock.assert_called_once_with("test/file/path/John_01.wav")
 
+    def test_sort_segments(self):
+        # Test that the segments are sorted correctly
+        segment_collection = [
+            [Segment("three", 3, 2), Segment("five", 5, 3), Segment("six", 6, 1)],
+            [Segment("one", 1, 2), Segment("two", 2, 3), Segment("four", 4, 1)],
+        ]
+        sorted_segments = Transcribe.sort_segments(segment_collection)
+        self.assertEqual(sorted_segments[0].text, "one")
+        self.assertEqual(sorted_segments[1].text, "two")
+        self.assertEqual(sorted_segments[2].text, "three")
+        self.assertEqual(sorted_segments[3].text, "four")
+        self.assertEqual(sorted_segments[4].text, "five")
+        self.assertEqual(sorted_segments[5].text, "six")
 
 if __name__ == '__main__':
-    unittest.main()
+    main()
