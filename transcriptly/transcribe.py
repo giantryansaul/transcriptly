@@ -41,22 +41,20 @@ class Transcribe:
             
             self.transcription_service = WhisperTranscribe(self.model_name)
 
-    # TODO: change inputs to AudioInput obj
-    def transcribe_single_audio_file(self, file_path, speaker=None) -> List[Segment]:
+    def transcribe_single_audio_file(self, audio_input: AudioInput) -> List[Segment]:
         """
         Transcribes a single audio file
 
         Input:
-            file_path: str
-            speaker: str
+            audio_input: AudioInput
 
         Returns: TranscriptionResult
         """
-        transcription = self.transcription_service.transcribe(file_path)
+        transcription = self.transcription_service.transcribe(audio_input.file_path)
         if self.remove_duplicates:
             transcription.segments = self.remove_duplicates_from_segments(transcription.segments)
-        if speaker != None:
-            transcription.segments = self.add_speaker_to_segments(speaker, transcription.segments)
+        if audio_input.speaker != None:
+            transcription.segments = self.add_speaker_to_segments(audio_input.speaker, transcription.segments)
         return transcription.segments
     
     def transcribe_multiple_audio_files_into_one(self, audio_inputs: List[AudioInput]) -> List[Segment]:
@@ -75,7 +73,7 @@ class Transcribe:
         segment_collection:List[List[Segment]] = []
         for ainput in audio_inputs:
             logging.info(f"Transcribing {ainput.file_path} with Speaker as {ainput.speaker}...")
-            transcription_segments = self.transcribe_single_audio_file(ainput.file_path, ainput.speaker)
+            transcription_segments = self.transcribe_single_audio_file(ainput)
             segment_collection.append(transcription_segments)
         # TODO: Start here when all transcriptions above are completed.
         # This could probably be an event trigger instead of sequential.
@@ -167,12 +165,15 @@ if __name__ == "__main__":
         if os.path.splitext(input)[1] == ".json":
             logging.info(f'Input is a JSON file. Running multi-file transcription...')
             with open(input, "r") as f:
-                audio_inputs = json.load(f)
+                json_input = json.load(f)
+            audio_inputs = []
+            for audio_input in json_input:
+                audio_inputs.append(AudioInput(audio_input["file_path"], audio_input["speaker"]))
             transcription = transcribe.transcribe_multiple_audio_files_into_one(audio_inputs)
         # If input is an audio file, run single-file transcription
         else:
             logging.info(f'Input is an audio file. Running single-file transcription...')
-            transcription = transcribe.transcribe_single_audio_file(input, speaker)
+            transcription = transcribe.transcribe_single_audio_file(AudioInput(input, speaker))
     elif os.path.isdir(input):
         # If input is a directory, run multi-file transcription
         logging.info(f'Input is a directory. Running multi-file transcription...')

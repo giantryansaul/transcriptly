@@ -4,3 +4,4 @@ SQLAlchemy
 uvicorn
 openapi
 tiktoken
+celery

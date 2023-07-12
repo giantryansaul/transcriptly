@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 from unittest.mock import patch
 from transcriptly.transcribe import Transcribe
-from transcriptly.data_types import Segment, TranscriptionResult
+from transcriptly.data_types import AudioInput, Segment, TranscriptionResult
 
 class TestTranscript(TestCase):
     def test_init(self):
@@ -43,7 +43,8 @@ class TestTranscript(TestCase):
             service_name="whisper",
             model_name="tiny"
         )
-        transcription_result = transcribe.transcribe_single_audio_file("test.wav")
+        ainput = AudioInput("test.wav")
+        transcription_result = transcribe.transcribe_single_audio_file(ainput)
         whisper_instance.transcribe.assert_called_once_with("test.wav")
         self.assertEqual(transcription_result[0].text, "Hello")
         self.assertEqual(transcription_result[1].text, "world")
@@ -63,7 +64,8 @@ class TestTranscript(TestCase):
             model_name="tiny",
             remove_duplicates=True
         )
-        transcription_result = transcribe.transcribe_single_audio_file("test.wav")
+        ainput = AudioInput("test.wav")
+        transcription_result = transcribe.transcribe_single_audio_file(ainput)
         self.assertEqual(len(transcription_result), 2)
         self.assertEqual(transcription_result[0].text, "Hello")
         self.assertEqual(transcription_result[1].text, "world")
@@ -81,7 +83,8 @@ class TestTranscript(TestCase):
             model_name="tiny",
             remove_duplicates=True
         )
-        transcription_result = transcribe.transcribe_single_audio_file("test.wav")
+        ainput = AudioInput("test.wav")
+        transcription_result = transcribe.transcribe_single_audio_file(ainput)
         self.assertEqual(len(transcription_result), 1)
         self.assertEqual(transcription_result[0].text, "Hello")
     
@@ -98,7 +101,8 @@ class TestTranscript(TestCase):
             service_name="whisper",
             model_name="tiny",
         )
-        transcription_result = transcribe.transcribe_single_audio_file("test.wav", speaker="John")
+        ainput = AudioInput("test.wav", speaker="John")
+        transcription_result = transcribe.transcribe_single_audio_file(ainput)
         self.assertEqual(len(transcription_result), 2)
         self.assertEqual(transcription_result[0].speaker, "John")
         self.assertEqual(transcription_result[1].speaker, "John")
